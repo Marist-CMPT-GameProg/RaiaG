@@ -14,9 +14,9 @@ side branchPositions[NUM_BRANCHES];
 
 int main()
 {
-	VideoMode vm(1920, 1080);
+	VideoMode vm(1920,1080);
 
-	RenderWindow window(vm, "Timber!!!", Style::Fullscreen);
+	RenderWindow window(vm, "Timber!!!", Style::Default);
 
 	Texture textureBackground;
 
@@ -55,27 +55,34 @@ int main()
 	float birdSpeed = 0.0f;
 
 	Texture textureCloud;
+	Texture textureBalloon;
 
+	textureBalloon.loadFromFile("graphics/balloon.png");
 	textureCloud.loadFromFile("graphics/cloud.png");
 
 	Sprite spriteCloud1;
 	Sprite spriteCloud2;
 	Sprite spriteCloud3;
+	Sprite spriteBalloon;
 	spriteCloud1.setTexture(textureCloud);
 	spriteCloud2.setTexture(textureCloud);
 	spriteCloud3.setTexture(textureCloud);
+	spriteBalloon.setTexture(textureBalloon);
 
 	spriteCloud1.setPosition(0, 0);
 	spriteCloud2.setPosition(0, 150);
 	spriteCloud3.setPosition(0, 300);
+	spriteBalloon.setPosition(0, 150);
 
 	bool cloud1Active = false;
 	bool cloud2Active = false;
 	bool cloud3Active = false;
+	bool balloonActive = false;
 
 	float cloud1Speed = 0.0f;
 	float cloud2Speed = 0.0f;
 	float cloud3Speed = 0.0f;
+	float balloonSpeed = 0.0f;
 
 	Clock clock;
 	RectangleShape timeBar;
@@ -137,7 +144,7 @@ int main()
 	scoreText.setPosition(20, 20);
 
 	Texture textureBranch;
-	textureBranch.loadFromFile("graphics/branch.png");
+	textureBranch.loadFromFile("graphics/branch2.png");
 
 	for (int i = 0; i < NUM_BRANCHES; i++) {
 		branches[i].setTexture(textureBranch);
@@ -147,7 +154,7 @@ int main()
 	}
 
 	Texture texturePlayer;
-	texturePlayer.loadFromFile("graphics/player.png");
+	texturePlayer.loadFromFile("graphics/player2.png");
 	Sprite spritePlayer;
 	spritePlayer.setTexture(texturePlayer);
 	spritePlayer.setPosition(580, 720);
@@ -155,7 +162,7 @@ int main()
 	side playerSide = side::LEFT;
 
 	Texture textureRIP;
-	textureRIP.loadFromFile("graphics/rip.png");
+	textureRIP.loadFromFile("graphics/rip2.png");
 	Sprite spriteRIP;
 	spriteRIP.setTexture(textureRIP);
 	spriteRIP.setPosition(600, 860);
@@ -207,8 +214,8 @@ int main()
 			{
 				acceptInput = true;
 
-				spriteAxe.setPosition(2000,
-					spriteAxe.getPosition().y);
+				//spriteAxe.setPosition(2000,
+					//spriteAxe.getPosition().y);
 			}
 
 			if (slowTimeActive) {
@@ -224,11 +231,6 @@ int main()
 
 		}
 
-		/*
-		****************************************
-		Handle the players input
-		****************************************
-		*/
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && abilityUses > 0 && !timePaused) {
 			timePaused = true;
@@ -237,6 +239,11 @@ int main()
 		}
 
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
+		{
+			window.close();
+		}
+
+		if (event.type == Event::Closed)
 		{
 			window.close();
 		}
@@ -269,13 +276,14 @@ int main()
 			if (Keyboard::isKeyPressed(Keyboard::Right))
 			{
 				playerSide = side::RIGHT;
-
+				spritePlayer.setScale(-1, 1);
+				spritePlayer.setOrigin(spritePlayer.getLocalBounds().width, 0);
 				score++;
 
 				timeRemaining += (2 / score) + .15;
 
-				spriteAxe.setPosition(AXE_POSITION_RIGHT,
-					spriteAxe.getPosition().y);
+				//spriteAxe.setPosition(AXE_POSITION_RIGHT,
+					//spriteAxe.getPosition().y);
 
 
 
@@ -297,13 +305,14 @@ int main()
 			if (Keyboard::isKeyPressed(Keyboard::Left))
 			{
 				playerSide = side::LEFT;
-
+				spritePlayer.setScale(1, 1);
+				spritePlayer.setOrigin(0, 0);
 				score++;
 
 				timeRemaining += (2 / score) + .15;
 
-				spriteAxe.setPosition(AXE_POSITION_LEFT,
-					spriteAxe.getPosition().y);
+				//spriteAxe.setPosition(AXE_POSITION_LEFT,
+					//spriteAxe.getPosition().y);
 
 
 				spritePlayer.setPosition(580, 720);
@@ -323,11 +332,7 @@ int main()
 
 
 		}
-		/*
-		****************************************
-		Update the scene
-		****************************************
-		*/
+
 		if (!paused)
 		{
 			Time dt = clock.restart();
@@ -422,20 +427,20 @@ int main()
 				}
 			}
 
-			if (!cloud1Active) {
-				cloud1Speed = (rand() % 200);
+			if (!balloonActive) {
+				balloonSpeed = (rand() % 200);
 				float startX = (rand() % 1920);
-				spriteCloud1.setPosition(startX, 100);
-				cloud1Active = true;
+				spriteBalloon.setPosition(startX, 100);
+				balloonActive = true;
 			}
 			else {
-				spriteCloud1.setPosition(
-					spriteCloud1.getPosition().x,
-					spriteCloud1.getPosition().y - (cloud1Speed * dt.asSeconds())
+				spriteBalloon.setPosition(
+					spriteBalloon.getPosition().x,
+					spriteBalloon.getPosition().y - (balloonSpeed * dt.asSeconds())
 				);
 
-				if (spriteCloud1.getPosition().y < -100) {
-					cloud1Active = false;
+				if (spriteBalloon.getPosition().y < -100) {
+					balloonActive = false;
 				}
 			}
 
@@ -490,6 +495,30 @@ int main()
 				}
 			}
 
+
+			if (!cloud1Active)
+			{
+
+				srand((int)time(0) * 30);
+				cloud1Speed = (rand() % 200);
+
+				srand((int)time(0) * 30);
+				float height = (rand() % 450) - 150;
+				spriteCloud1.setPosition(-200, height);
+				cloud1Active = true;
+			}
+			else
+			{
+				spriteCloud1.setPosition(
+					spriteCloud1.getPosition().x +
+					(cloud1Speed * dt.asSeconds()),
+					spriteCloud1.getPosition().y);
+
+				if (spriteCloud1.getPosition().x > 1920)
+				{
+					cloud1Active = false;
+				}
+			}
 			std::stringstream ss;
 			ss << "Score = " << score;
 			scoreText.setString(ss.str());
@@ -570,6 +599,7 @@ int main()
 		window.draw(spriteCloud1);
 		window.draw(spriteCloud2);
 		window.draw(spriteCloud3);
+		window.draw(spriteBalloon);
 
 		for (int i = 0; i < NUM_BRANCHES; i++) {
 			window.draw(branches[i]);
@@ -579,7 +609,7 @@ int main()
 
 		window.draw(spritePlayer);
 
-		window.draw(spriteAxe);
+		//window.draw(spriteAxe);
 
 		window.draw(spriteLog);
 
