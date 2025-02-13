@@ -189,17 +189,17 @@ int main()
 	bool acceptInput = false;
 
 	SoundBuffer chopBuffer;
-	chopBuffer.loadFromFile("sound/chop.wav");
+	chopBuffer.loadFromFile("sound/bite.wav");
 	Sound chop;
 	chop.setBuffer(chopBuffer);
 
 	SoundBuffer deathBuffer;
-	deathBuffer.loadFromFile("sound/death.wav");
+	deathBuffer.loadFromFile("sound/death2.wav");
 	Sound death;
 	death.setBuffer(deathBuffer);
 
 	SoundBuffer ootBuffer;
-	ootBuffer.loadFromFile("sound/out_of_time.wav");
+	ootBuffer.loadFromFile("sound/out_of_time2.wav");
 	Sound outOfTime;
 	outOfTime.setBuffer(ootBuffer);
 
